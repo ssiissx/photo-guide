@@ -51,7 +51,9 @@ const CHEAT_ONE = {
   s10: '하늘은 빼고 색과 반영 찾기', s11: '밝은 곳에서 연속 촬영, 앞에 여백', s12: '그늘에서 1x, 엇갈린 높이로',
   s13: '노출 +, 결이 사라지기 직전까지', s14: '렌즈를 창에 붙이고 손으로 가리기'
 };
-const label = id => CH[id] ? `${CH[id].code} ${CH[id].title}` : CASE[id] ? `케이스 ${CASE[id].no} ${CASE[id].title}` : XPAGES[id] ? XPAGES[id].title : id;
+const label = id => CH[id] ? CH[id].title : CASE[id] ? CASE[id].title : XPAGES[id] ? XPAGES[id].title : id;
+const partName = p => p.no === '0' ? p.name : `${p.no}부 ${p.name}`;
+const TAB_NAME = { home: '홈', theory: '이론', cases: '상황별', check: '체크' };
 const groupOf = id => ['home', 'theory', 'cases', 'check'].includes(id) ? id : CH[id] ? 'theory' : CASE[id] ? 'cases' : 'check';
 const valid = id => ['home', 'theory', 'cases', 'check'].includes(id) || !!CH[id] || !!CASE[id] || !!XPAGES[id];
 
@@ -72,7 +74,7 @@ function rowsHTML({ head, rows, cap }) {
 }
 function figHTML(key, cap) {
   const diagram = ['window', 'triangle', 'metering', 'iphoneui', 'histogram', 'hdr', 'height', 'wideportrait', 'kelvin', 'colorwheel'].includes(key);
-  return `<figure class="print ${diagram ? 'diagram' : 'taped'}">${SC[key]()}<figcaption>${cap || ''}</figcaption></figure>`;
+  return `<figure class="print ${diagram ? 'diagram' : 'pic'}">${SC[key]()}<figcaption>${cap || ''}</figcaption></figure>`;
 }
 let CMP_N = 0;
 function compareHTML(bad, good, capBad, capGood) {
@@ -157,7 +159,7 @@ function lightSVG(th) {
 }
 function lightWidget() {
   return `<div class="widget" data-w="light">
-    <div class="widget-k"><span class="h3">해를 움직여 보세요</span><span class="small-k">SUN ANGLE</span></div>
+    <div class="widget-k"><span class="h3">해를 움직여 보세요</span></div>
     <div class="lw-svg">${lightSVG(45)}</div>
     <label class="sr" for="sun-angle">해의 각도</label>
     <input id="sun-angle" class="range" type="range" min="0" max="180" step="1" value="45">
@@ -195,7 +197,7 @@ function lensViewA(st) {
   const svg = lensMaster().replace('viewBox="0 0 400 300"', `viewBox="${x} ${y} ${w} ${h}" preserveAspectRatio="xMidYMid slice"`)
     .replace('<defs>', `<defs><filter id="lzblur" x="-5%" y="-5%" width="110%" height="110%"><feGaussianBlur stdDeviation="${blur.toFixed(2)}"/></filter>`)
     .replace(/(<\/defs>)([\s\S]*)(<\/svg>)$/, (_, a, body, c) => `${a}<g${blur ? ' filter="url(#lzblur)"' : ''}>${body}</g>${c}`);
-  const mini = `<svg class="lz-mini" viewBox="0 0 400 300" aria-hidden="true"><image href="data:image/svg+xml;utf8,${encodeURIComponent(lensMaster().replace('<svg ', '<svg xmlns="http://www.w3.org/2000/svg" '))}" width="400" height="300"/><rect x="${x}" y="${y}" width="${w}" height="${h}" fill="none" stroke="#FFD60A" stroke-width="${6}"/></svg>`;
+  const mini = `<svg class="lz-mini" viewBox="0 0 400 300" aria-hidden="true"><image href="data:image/svg+xml;utf8,${encodeURIComponent(lensMaster().replace('<svg ', '<svg xmlns="http://www.w3.org/2000/svg" '))}" width="400" height="300"/><rect x="${x}" y="${y}" width="${w}" height="${h}" fill="none" stroke="#EFD690" stroke-width="${6}"/></svg>`;
   return `<div class="lz-view">${svg}${mini}</div>`;
 }
 function lensViewB(st) {
@@ -214,15 +216,15 @@ function lensViewB(st) {
 }
 function lensWidget(mode) {
   return `<div class="widget" data-w="lens" data-mode="${mode}" data-m="std" data-z="${mode === 'A' ? 1 : 2}">
-    <div class="widget-k"><span class="h3">${mode === 'A' ? '렌즈 버튼을 눌러 보세요' : '인물 크기를 고정하고 렌즈를 바꾸면'}</span><span class="small-k">${mode === 'A' ? 'FIELD OF VIEW' : 'DISTANCE'}</span></div>
+    <div class="widget-k"><span class="h3">${mode === 'A' ? '렌즈 버튼을 눌러 보세요' : '인물 크기를 고정하고 렌즈를 바꾸면'}</span></div>
     <div class="seg" role="group" aria-label="보기 방식">
       <button type="button" data-lmode="A" aria-pressed="${mode === 'A'}">제자리에서 렌즈만</button>
       <button type="button" data-lmode="B" aria-pressed="${mode === 'B'}">인물 크기 고정</button>
     </div>
     <div class="lz-out"></div>
-    <div><p class="small-k ko" style="margin:0 0 .5rem">내 아이폰</p><div class="chips" data-models>${Object.entries(MODELS).map(([k, m]) => `<button type="button" class="chip" data-model="${k}" aria-pressed="${k === 'std'}">${m.name}<span class="sr"> ${m.sub}</span></button>`).join('')}</div></div>
-    <div><p class="small-k ko" style="margin:0 0 .5rem">렌즈 버튼</p><div class="chips nowrap" data-lenses></div></div>
-    <div class="legend"><span><i style="background:var(--teal)"></i>광학</span><span><i style="background:var(--yellow)"></i>센서 크롭</span><span><i style="border-top:1.5px dashed var(--ink-2);height:0"></i>디지털 줌</span></div>
+    <div><p class="wlabel">내 아이폰</p><div class="chips" data-models>${Object.entries(MODELS).map(([k, m]) => `<button type="button" class="chip" data-model="${k}" aria-pressed="${k === 'std'}">${m.name}<span class="sr"> ${m.sub}</span></button>`).join('')}</div></div>
+    <div><p class="wlabel">렌즈 버튼</p><div class="chips nowrap" data-lenses></div></div>
+    <div class="legend"><span><i class="k-opt"></i>광학</span><span><i class="k-crop"></i>센서 크롭</span><span><i class="k-dig"></i>디지털 줌</span></div>
     <div class="readout" aria-live="polite"></div>
   </div>`;
 }
@@ -234,7 +236,6 @@ function updateLens(w) {
   $$('[data-model]', w).forEach(b => b.setAttribute('aria-pressed', String(b.dataset.model === st.m)));
   $$('[data-lmode]', w).forEach(b => b.setAttribute('aria-pressed', String(b.dataset.lmode === st.mode)));
   $('.widget-k .h3', w).textContent = st.mode === 'A' ? '렌즈 버튼을 눌러 보세요' : '인물 크기를 고정하고 렌즈를 바꾸면';
-  $('.widget-k .small-k', w).textContent = st.mode === 'A' ? 'FIELD OF VIEW' : 'DISTANCE';
   $('.lz-out', w).innerHTML = st.mode === 'A' ? lensViewA(st) : lensViewB(st);
   const f = LENSES.find(l => l[0] === st.z)[1], kind = kindOf(st.m, st.z), m = MODELS[st.m];
   let p;
@@ -254,31 +255,29 @@ function updateLens(w) {
 const view = () => $('#view');
 function readBtn(id) {
   const on = READ.has(id);
-  return `<button type="button" class="readbtn" data-read="${id}" aria-pressed="${on}">${on ? '현상 완료' : '다 읽었어요'}<small>${on ? 'READ ✓' : 'TAP TO MARK'}</small></button>`;
+  return `<button type="button" class="readbtn" data-read="${id}" aria-pressed="${on}">${on ? icon('check') + '읽었어요' : '다 읽었어요'}</button>`;
 }
 function pnHTML(list, id) {
   const i = list.indexOf(id), prev = list[i - 1], next = list[i + 1];
-  const tk = (t, dir) => t ? `<button type="button" class="ticket ghost ${dir}" data-go="${t}"><span class="t-main"><span class="t-sub">${dir === 'prev' ? '← 이전' : '다음 →'}</span><span>${label(t)}</span></span></button>` : '<span></span>';
-  return `<div class="pn">${tk(prev, 'prev')}${tk(next, 'next')}</div>`;
+  return `<div class="pn">${next ? `<button type="button" class="pn-next" data-go="${next}"><small>다음 편</small><b>${label(next)}</b></button>` : ''}${
+    prev ? `<button type="button" class="pn-prev" data-go="${prev}">이전 편: ${label(prev)}</button>` : ''}</div>`;
 }
 function renderChapter(id) {
-  const c = CH[id], p = PART_OF[id];
-  return `<header class="page-head"><div class="eyebrow"><span class="code">${c.code}</span><span>PART ${p.no} · ${p.name}</span></div>
-    <h1 class="h1">${c.title}</h1><p class="lede">${c.lede}</p></header>
+  const c = CH[id];
+  return `<header class="page-head"><h1 class="h1">${c.title}</h1><p class="lede">${c.lede}</p></header>
     <div class="flow">${c.body.map(block).join('')}</div>
     <div class="endcap">${readBtn(id)}${pnHTML(ORDER, id)}</div>`;
 }
 function renderCase(id) {
   const c = CASE[id];
   const order = CASES.map(x => x.id);
-  return `<header class="page-head"><div class="eyebrow"><span class="code">CASE ${c.no}</span><span>상황별</span></div>
-    <h1 class="h1">${c.title}</h1><p class="lede">${c.short}</p>
+  return `<header class="page-head"><h1 class="h1">${c.title}</h1><p class="lede">${c.short}</p>
     <div class="when">${c.when.map(w => `<span class="labeltape">${w}</span>`).join('')}</div></header>
     ${compareHTML(CS[id].bad(), CS[id].good(), c.cap[0], c.cap[1])}
-    <section class="sec"><div class="sec-k"><span class="num">01</span><h2 class="h2">문제</h2></div><p class="p">${inline(c.problem)}</p></section>
-    <section class="sec"><div class="sec-k"><span class="num">02</span><h2 class="h2">원리</h2></div><p class="p">${inline(c.principle)}</p>
+    <section class="sec"><h2 class="h2">문제</h2><p class="p">${inline(c.problem)}</p></section>
+    <section class="sec"><h2 class="h2">원리</h2><p class="p">${inline(c.principle)}</p>
       <div class="related">${c.links.map(l => `<button type="button" class="xlink" data-go="${l}">${label(l)}</button>`).join('')}</div></section>
-    <section class="sec"><div class="sec-k"><span class="num">03</span><h2 class="h2">해결</h2></div><ol class="steps">${c.fix.map(x => `<li><span>${inline(x)}</span></li>`).join('')}</ol></section>
+    <section class="sec"><h2 class="h2">해결</h2><ol class="steps">${c.fix.map(x => `<li><span>${inline(x)}</span></li>`).join('')}</ol></section>
     <aside class="note" style="margin-top:1.4rem"><span class="note-k">메모</span>${inline(c.note)}</aside>
     <div class="endcap">${readBtn(id)}${pnHTML(order, id)}</div>`;
 }
@@ -286,41 +285,37 @@ function renderHome() {
   const last = store.get('last', null);
   const cont = last && valid(last) && !['home', 'theory', 'cases', 'check'].includes(last) ? last : 'intro';
   const readCount = [...READ].filter(x => CH[x] || CASE[x]).length;
-  const frames = [...ORDER, ...CASES.map(c => c.id)].map(id => `<i class="${READ.has(id) ? 'on' : ''}"></i>`).join('');
+  const cells = [...ORDER, ...CASES.map(c => c.id)].map(id => `<i class="${READ.has(id) ? 'on' : ''}"></i>`).join('');
   const tip = DAILY[Math.floor(Math.random() * DAILY.length)];
-  const tocRow = (n, t, d, go, c) => `<li><button type="button" data-${go[0]}="${go[1]}"><span class="n">${n}</span><span><span class="t">${t}</span><span class="d">${d}</span></span><span class="c">${c}</span></button></li>`;
-  return `<section class="mast">
-      <div class="mast-top"><span>VOL.01 · 이론편</span><span>2026 가을호</span></div>
-      <h1 class="mast-title">사진 잘<br>찍는 <em>법</em></h1>
-      <div class="mast-sub"><span class="hand">아이폰으로 떠나는 여행 사진</span><span class="small-k">43 STORIES</span></div>
-    </section>
-    <figure class="print taped cover">${SC.cover()}<figcaption>해가 지기 20분 전, 측광에서 역광으로</figcaption></figure>
-    <button type="button" class="ticket wide" data-go="${cont}"><span class="stub">${icon(cont === 'intro' ? 'player-play' : 'bookmark')}</span>
-      <span class="t-main"><span class="t-sub">${cont === 'intro' ? 'START' : 'CONTINUE'}</span><span>${cont === 'intro' ? '처음부터 읽기' : '이어서 읽기 · ' + label(cont)}</span></span></button>
-    <div class="progress"><div class="progress-top"><h2 class="h3">현상한 필름</h2><span class="progress-n">${readCount} / ${TOTAL}컷</span></div>
-      <div class="filmbar" role="img" aria-label="${TOTAL}편 중 ${readCount}편 읽음"><div class="filmbar-frames">${frames}</div></div></div>
-    <div class="section-k"><h2 class="h2">이번 호 차례</h2><small>CONTENTS</small></div>
-    <ul class="toc">
-      ${PARTS.map(p => tocRow(p.no, p.name, p.desc, ['go', p.ch[0]], p.ch.length + '편')).join('')}
-      ${tocRow('6', '상황별 케이스', '여행지에서 바로 꺼내 보는 14가지 장면', ['tab', 'cases'], '14편')}
-      ${tocRow('7', '체크와 부록', '아이폰 설정, 여행 루틴, 치트시트, 용어', ['tab', 'check'], '6편')}
-    </ul>
-    <aside class="memo daily"><span class="memo-k">오늘의 한 줄</span>${tip}</aside>
-    ${STANDALONE ? '' : `<aside class="note" style="margin-top:1.6rem"><span class="note-k">홈 화면에 추가하기</span>아이폰 Safari에서 아래쪽 공유 버튼(네모에 위쪽 화살표)을 누르고 ‘홈 화면에 추가’를 고르면 앱처럼 열려요. 한 번 열어 두면 데이터가 없어도 열립니다.</aside>`}`;
+  const PART_PIC = { p0: 'cover', p1: 'daylight', p2: 's13', p3: 'thirds_good', p4: 's01', p5: 's06' };
+  const thumb = k => (SC[k] ? SC[k]() : CS[k].good()).replace('<svg ', '<svg preserveAspectRatio="xMidYMid slice" ');
+  const tocRow = (pic, t, d, go, c) => `<li><button type="button" data-${go[0]}="${go[1]}"><span class="th">${thumb(pic)}</span><span><b>${t}</b><small>${d}</small></span><em>${c}</em></button></li>`;
+  return `<figure class="hero">${SC.cover()}<div class="hud" aria-hidden="true"><span>사진 잘 찍는 법</span><span>1×</span></div><figcaption>해가 지기 20분 전, 측광에서 역광으로</figcaption></figure>
+    <h1 class="title">사진 잘 찍는 법</h1>
+    <p class="lede-home">아이폰으로 떠나는 여행 사진. 빛·노출·구도·화각·색 이론 ${ORDER.length}편과 상황별 ${CASES.length}편.</p>
+    <button type="button" class="shoot" data-go="${cont}"><span class="shutter"><i>${icon('player-play')}</i></span>
+      <span><b>${cont === 'intro' ? '처음부터 읽기' : '이어서 읽기'}</b><small>${label(cont)}</small></span></button>
+    <div class="roll"><p><span>읽은 편</span><b>${readCount} / ${TOTAL}</b></p><div class="cells" role="img" aria-label="${TOTAL}편 중 ${readCount}편 읽음">${cells}</div></div>
+    <section class="toc"><h2 class="h2">차례</h2><ul>
+      ${PARTS.map(p => tocRow(PART_PIC[p.id], partName(p), p.desc, ['go', p.ch[0]], p.ch.length + '편')).join('')}
+      ${tocRow('s07', '상황별 케이스', '여행지에서 바로 꺼내 보는 14가지 장면', ['tab', 'cases'], CASES.length + '편')}
+      ${tocRow('iphoneui', '체크와 부록', '아이폰 설정, 여행 루틴, 치트시트, 용어', ['tab', 'check'], '6편')}
+    </ul></section>
+    <p class="daily"><span>오늘의 한 줄</span>${tip}</p>
+    ${STANDALONE ? '' : `<aside class="note" style="margin-top:44px"><span class="note-k">홈 화면에 추가하기</span>아이폰 Safari에서 아래쪽 공유 버튼(네모에 위쪽 화살표)을 누르고 ‘홈 화면에 추가’를 고르면 앱처럼 열려요. 한 번 열어 두면 데이터가 없어도 열립니다.</aside>`}`;
 }
 function renderTheory() {
-  return `<header class="page-head"><div class="eyebrow"><span class="code">PART 0–5</span><span>이론</span></div><h1 class="h1">이론</h1>
+  return `<header class="page-head"><h1 class="h1">이론</h1>
     <p class="lede">빛, 노출, 구도, 화각, 색. 출발 전에 한 번 읽어 두면 현장에서 손이 먼저 움직인다.</p></header>` +
-    PARTS.map(p => `<section class="part"><div class="part-head"><span class="part-no">${p.no}</span><span class="part-name">${p.name}</span><span class="part-desc">${p.desc}</span></div>
-      ${p.ch.map(id => `<button type="button" class="chap ${READ.has(id) ? 'is-read' : ''}" data-go="${id}"><span class="chap-code">${CH[id].code}</span><span><span class="chap-t">${CH[id].title}</span><span class="chap-d">${CH[id].short}</span></span><span class="readmark" aria-label="${READ.has(id) ? '읽음' : '안 읽음'}">${icon('check')}</span></button>`).join('')}</section>`).join('');
+    PARTS.map(p => `<section class="part"><div class="part-head"><h2 class="h2">${partName(p)}</h2><p class="part-desc">${p.desc}</p></div>
+      ${p.ch.map(id => `<button type="button" class="chap ${READ.has(id) ? 'is-read' : ''}" data-go="${id}"><span><span class="chap-t">${CH[id].title}</span><span class="chap-d">${CH[id].short}</span></span><span class="readmark" aria-label="${READ.has(id) ? '읽음' : '안 읽음'}">${icon('check')}</span></button>`).join('')}</section>`).join('');
 }
 function renderCases() {
-  return `<header class="page-head"><div class="eyebrow"><span class="code">CASE 01–14</span><span>상황별</span></div><h1 class="h1">상황별 케이스</h1>
+  return `<header class="page-head"><h1 class="h1">상황별 케이스</h1>
     <p class="lede">여행지에서 마주치는 14가지 장면. 문제, 원리, 해결 순서로 보고 ✕/○ 컷을 비교한다.</p></header>
     <label class="search" for="case-search">${icon('search')}<span class="sr">상황 검색</span><input id="case-search" type="search" placeholder="노을, 카페, 셀카처럼 찾아보세요" autocomplete="off" enterkeyhint="search"></label>
     <div class="quick">${['노을', '야경', '음식', '인물', '실내', '비'].map(k => `<button type="button" class="chip" data-q="${k}">${k}</button>`).join('')}</div>
     <div class="sheet"><p class="empty" hidden>맞는 장면이 없어요. 다른 말로 찾아보세요.</p>${CASES.map(c => `<button type="button" class="frame ${READ.has(c.id) ? 'is-read' : ''}" data-go="${c.id}">
-      <span class="frame-edge"><span>${c.no}A ▸</span><span>FILM 400</span></span>
       <span class="frame-img">${CS[c.id].good().replace('<svg ', '<svg preserveAspectRatio="xMidYMid slice" ')}</span>
       <span class="frame-t">${c.title}</span><span class="frame-w">${c.short}</span></button>`).join('')}</div>`;
 }
@@ -329,15 +324,15 @@ function checkItem(it) {
 }
 function renderCheck() {
   const n = SETUP.filter(x => CHECKED.has(x.id)).length;
-  return `<header class="page-head"><div class="eyebrow"><span class="code">CHECK</span><span>체크와 부록</span></div><h1 class="h1">떠나기 전, 그리고 현장에서</h1>
+  return `<header class="page-head"><h1 class="h1">떠나기 전, 그리고 현장에서</h1>
     <p class="lede">체크 표시는 이 기기에만 저장된다. 여행이 끝나면 아래에서 한 번에 지울 수 있다.</p></header>
     <div class="section-k"><h2 class="h2">아이폰 설정</h2><small class="count" data-count>${n} / ${SETUP.length}</small></div>
     <ul class="checks">${SETUP.map(checkItem).join('')}</ul>
-    <div class="section-k"><h2 class="h2">여행 촬영 루틴</h2><small>ROUTINE</small></div>
-    ${ROUTINE.map(g => `<p class="group-k">${g.k}</p><ul class="checks">${g.items.map(checkItem).join('')}</ul>`).join('')}
-    <div style="margin-top:1rem"><button type="button" class="ticket ghost" data-reset>${icon('rotate')}체크 모두 지우기</button><p class="small-k ko" data-reset-msg style="margin:.6rem 0 0" hidden></p></div>
-    <div class="section-k"><h2 class="h2">부록</h2><small>APPENDIX</small></div>
-    <ul class="linkrows">${Object.entries(XPAGES).map(([k, x]) => `<li><button type="button" data-go="${k}">${icon(x.icon)}<span><span class="chap-t">${x.title}</span><span class="chap-d">${x.d}</span></span>${icon('chevron-right', 'chev')}</button></li>`).join('')}</ul>`;
+    <div class="section-k"><h2 class="h2">여행 촬영 루틴</h2></div>
+    ${ROUTINE.map(g => `<h3 class="h3 group-k">${g.k}</h3><ul class="checks">${g.items.map(checkItem).join('')}</ul>`).join('')}
+    <div><button type="button" class="reset" data-reset>${icon('rotate')}체크 모두 지우기</button><p class="reset-msg" data-reset-msg hidden></p></div>
+    <div class="section-k"><h2 class="h2">부록</h2></div>
+    <ul class="linkrows">${Object.entries(XPAGES).map(([k, x]) => `<li><button type="button" data-go="${k}"><span class="ic">${icon(x.icon)}</span><span><span class="chap-t">${x.title}</span><span class="chap-d">${x.d}</span></span>${icon('chevron-right', 'chev')}</button></li>`).join('')}</ul>`;
 }
 function renderX(id) {
   const x = XPAGES[id];
@@ -357,11 +352,11 @@ function renderX(id) {
     body = `<ol class="steps">${MISTAKES.map(([t, d, l]) => `<li><span><b>${t}</b><br>${d}${l ? ` <button type="button" class="xlink" data-go="${l}">${label(l)}</button>` : ''}</span></li>`).join('')}</ol>`;
   } else if (id === 'people') {
     body = `<p class="p" style="margin-bottom:1rem">사진은 이 앱에 싣지 않았다. 이름으로 검색해서 직접 찾아보자.</p><div class="rows">${PEOPLE.map(([ko, en, w, d, learn, l]) =>
-      `<div class="row"><span class="row-t">${ko} <span class="small-k">${en}</span></span><dl class="row-kv"><dt>시대·지역</dt><dd>${w}</dd><dt>특징</dt><dd>${d}</dd><dt>배울 점</dt><dd>${learn} · <button type="button" class="xlink" data-go="${l}">${label(l)}</button></dd></dl></div>`).join('')}</div>`;
+      `<div class="row"><span class="row-t">${ko} <small>${en}</small></span><dl class="row-kv"><dt>시대·지역</dt><dd>${w}</dd><dt>특징</dt><dd>${d}</dd><dt>배울 점</dt><dd>${learn} · <button type="button" class="xlink" data-go="${l}">${label(l)}</button></dd></dl></div>`).join('')}</div>`;
   } else {
     body = `<dl class="terms">${TERMS.map(([t, e, d]) => `<div class="term"><dt>${t}<small>${e}</small></dt><dd>${d}</dd></div>`).join('')}</dl>`;
   }
-  return `<header class="page-head"><div class="eyebrow"><span class="code">APPENDIX</span><span>체크와 부록</span></div><h1 class="h1">${x.title}</h1><p class="lede">${x.d}</p></header>${body}`;
+  return `<header class="page-head"><h1 class="h1">${x.title}</h1><p class="lede">${x.d}</p></header>${body}`;
 }
 
 /* ---------- router ---------- */
@@ -378,8 +373,9 @@ function render(id) {
   const bar = $('#bar');
   bar.hidden = root;
   if (!root) {
-    $('#bar-title').textContent = CH[id] ? CH[id].title : CASE[id] ? CASE[id].title : XPAGES[id].title;
-    $('#bar-code').textContent = CH[id] ? CH[id].code : CASE[id] ? 'CASE ' + CASE[id].no : 'APPX';
+    const to = STACK.length > 1 ? STACK[STACK.length - 2].id : groupOf(id); // where back() will land
+    $('#bar-back').textContent = TAB_NAME[to] || label(to);
+    $('#bar-meta').textContent = CH[id] ? partName(PART_OF[id]) : CASE[id] ? `${+CASE[id].no} / ${CASES.length}` : '부록';
   }
   const g = groupOf(id);
   $$('.tab').forEach(t => t.toggleAttribute('aria-current', false));

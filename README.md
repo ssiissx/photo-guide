@@ -38,6 +38,6 @@ python build.py <tabler-icons>/icons/outline
 
 ## 라이선스
 
-- 글꼴: Hahmlet, IBM Plex Sans KR, IBM Plex Mono, Nanum Pen Script. 모두 SIL Open Font License 1.1이며 원문은 `fonts/OFL-*.txt`에 있습니다.
+- 글꼴: IBM Plex Sans KR. SIL Open Font License 1.1이며 원문은 `fonts/OFL-ibmplexsanskr.txt`에 있습니다.
 - 아이콘: Tabler Icons (MIT).
 - 사진은 쓰지 않았습니다. 사진가는 이름과 특징으로만 소개합니다.

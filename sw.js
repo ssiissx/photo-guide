@@ -1,5 +1,5 @@
 /* Offline copy of the photo guide. build.py fills in the version and the file list. */
-const CACHE = 'photo-guide-5e525a6d22';
+const CACHE = 'photo-guide-6716dc5d41';
 const ASSETS = [
   "./",
   "index.html",
@@ -8,24 +8,18 @@ const ASSETS = [
   "icon-192.png",
   "icon-512.png",
   "icon-maskable-512.png",
-  "fonts/Hahmlet-0-cdd619.woff2",
-  "fonts/Hahmlet-1-9fe181.woff2",
-  "fonts/Hahmlet-2-0130bc.woff2",
-  "fonts/IBMPlexMono-0-6488dd.woff2",
-  "fonts/IBMPlexMono-0-64b4f0.woff2",
-  "fonts/IBMPlexMono-0-85e659.woff2",
-  "fonts/IBMPlexSansKR-0-892a13.woff2",
-  "fonts/IBMPlexSansKR-0-97bda3.woff2",
-  "fonts/IBMPlexSansKR-0-ff0a2d.woff2",
-  "fonts/IBMPlexSansKR-1-0146a4.woff2",
-  "fonts/IBMPlexSansKR-1-0976a9.woff2",
-  "fonts/IBMPlexSansKR-1-6ab080.woff2",
-  "fonts/IBMPlexSansKR-2-34bbaf.woff2",
-  "fonts/IBMPlexSansKR-2-88561d.woff2",
-  "fonts/IBMPlexSansKR-2-b1e3cf.woff2",
-  "fonts/NanumPenScript-0-46266e.woff2",
-  "fonts/NanumPenScript-1-f23b9a.woff2",
-  "fonts/NanumPenScript-2-6218b0.woff2"
+  "fonts/IBMPlexSansKR-0-20ed2f.woff2",
+  "fonts/IBMPlexSansKR-0-2d4fc4.woff2",
+  "fonts/IBMPlexSansKR-0-585927.woff2",
+  "fonts/IBMPlexSansKR-0-bf5400.woff2",
+  "fonts/IBMPlexSansKR-1-411411.woff2",
+  "fonts/IBMPlexSansKR-1-48e05d.woff2",
+  "fonts/IBMPlexSansKR-1-5938c7.woff2",
+  "fonts/IBMPlexSansKR-1-8f2e3a.woff2",
+  "fonts/IBMPlexSansKR-2-292b68.woff2",
+  "fonts/IBMPlexSansKR-2-3eb66c.woff2",
+  "fonts/IBMPlexSansKR-2-59aa1d.woff2",
+  "fonts/IBMPlexSansKR-2-8af520.woff2"
 ];
 
 self.addEventListener('install', e => {

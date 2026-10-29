@@ -8,10 +8,10 @@ SRC = os.path.join(HERE, 'src')
 LONG = r'\\?' + '\\'
 ICONS = ['book', 'sun', 'aperture', 'layout-grid', 'zoom-in', 'palette', 'mountain', 'building-arch', 'user', 'building-monument',
          'mood-smile', 'coffee', 'sunset-2', 'moon', 'building-bank', 'cloud-rain', 'run', 'users-group', 'snowflake', 'plane',
-         'home', 'book-2', 'map-pin', 'checklist', 'arrow-left', 'chevron-right', 'check', 'player-play', 'bookmark',
+         'home', 'book-2', 'map-pin', 'checklist', 'chevron-left', 'chevron-right', 'check', 'player-play',
          'list-check', 'alert-triangle', 'users', 'notebook', 'rotate', 'search']
 NAME, SHORT = '사진 잘 찍는 법', '사진 이론'
-LIGHT_BG, DARK_BG, STRIP = '#ECE2D0', '#15100D', '#2A211B'
+BG = '#18181a'  # the app is always dark: page, status bar and manifest share this charcoal
 
 
 def read(name):
@@ -40,7 +40,7 @@ def icons(d):
 def main():
     ic = icons(sys.argv[1])
     svg = lambda n: f'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{ic[n]}</svg>'
-    tabs = ''.join(f'<button type="button" class="tab" data-tab="{t}">{svg(i)}<span>{n}</span><span class="tab-dot"></span></button>'
+    tabs = ''.join(f'<button type="button" class="tab" data-tab="{t}">{svg(i)}<span>{n}</span></button>'
                    for t, i, n in [('home', 'home', '홈'), ('theory', 'book-2', '이론'), ('cases', 'map-pin', '상황별'), ('check', 'checklist', '체크')])
     page = f'''<!doctype html>
 <html lang="ko">
@@ -49,11 +49,10 @@ def main():
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>{NAME}</title>
 <meta name="description" content="아이폰으로 여행 사진을 잘 찍기 위한 이론서. 빛, 노출, 구도, 화각, 색과 상황별 14가지 케이스.">
-<meta name="theme-color" content="{LIGHT_BG}" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="{DARK_BG}" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="{BG}">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="{SHORT}">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
@@ -67,9 +66,9 @@ img {{ max-width: 100%; }}
 </style>
 </head>
 <body>
-<header class="bar" id="bar" hidden><div class="bar-in"><button type="button" class="back" data-back>{svg('arrow-left')}뒤로</button><span class="bar-title" id="bar-title"></span><span class="bar-code" id="bar-code"></span></div></header>
+<header class="bar" id="bar" hidden><div class="bar-in"><button type="button" class="back" data-back>{svg('chevron-left')}<span id="bar-back">뒤로</span></button><span class="bar-meta" id="bar-meta"></span></div></header>
 <main class="wrap" id="view"></main>
-<nav class="tabbar" aria-label="탭"><div class="tabbar-in">{tabs}</div><div class="tabbar-holes" style="margin:2px 0 5px"></div></nav>
+<nav class="tabbar" aria-label="탭"><div class="tabbar-in">{tabs}</div></nav>
 <noscript><p style="padding:2rem 1rem">이 앱은 자바스크립트가 켜져 있어야 열려요.</p></noscript>
 <script>
 const ICONS = {json.dumps(ic, ensure_ascii=False)};
@@ -86,7 +85,7 @@ const ICONS = {json.dumps(ic, ensure_ascii=False)};
         'name': NAME, 'short_name': SHORT, 'lang': 'ko', 'dir': 'ltr',
         'description': '아이폰 여행 사진 이론서: 빛, 노출, 구도, 화각, 색, 상황별 케이스',
         'start_url': './', 'scope': './', 'display': 'standalone', 'orientation': 'portrait',
-        'background_color': LIGHT_BG, 'theme_color': STRIP,
+        'background_color': BG, 'theme_color': BG,
         'icons': [
             {'src': 'icon-192.png', 'sizes': '192x192', 'type': 'image/png', 'purpose': 'any'},
             {'src': 'icon-512.png', 'sizes': '512x512', 'type': 'image/png', 'purpose': 'any'},

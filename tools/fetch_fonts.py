@@ -1,7 +1,7 @@
 """Download font subsets that cover exactly the characters this app uses, so it works offline.
 Writes fonts/*.woff2 and src/fonts.css. Re-run after changing the text.
 usage: python tools/fetch_fonts.py
-Fonts (all SIL Open Font License): Hahmlet, IBM Plex Sans KR, IBM Plex Mono, Nanum Pen Script, via Google Fonts."""
+Font: IBM Plex Sans KR (SIL Open Font License), via Google Fonts."""
 import os, re, hashlib, urllib.request, urllib.parse
 
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -9,10 +9,7 @@ SRC = os.path.join(HERE, 'src')
 OUT = os.path.join(HERE, 'fonts')
 UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36'
 FAMILIES = [
-    ('Hahmlet', 'wght@400;600;700;800', 'ko'),
-    ('IBM Plex Sans KR', 'wght@400;500;600', 'ko'),
-    ('Nanum Pen Script', '', 'ko'),
-    ('IBM Plex Mono', 'wght@400;500;600', 'latin'),
+    ('IBM Plex Sans KR', 'wght@400;500;600;700', 'ko'),
 ]
 CHUNK = 400  # characters per request, keeps URLs short
 
